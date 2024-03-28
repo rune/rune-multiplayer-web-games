@@ -27,6 +27,13 @@ Because it's the future! 😎 All modern multiplayer engines use predict-rollbac
 
 Rune's predict-rollback approach is extremely bandwidth-efficient as only the action payloads are sent between clients and server, not the entire game state. Clients can also simulate the world ahead of the server, which makes real-time games possible even on bad mobile internet with frequent latency spikes. This is all done by having the exact same deterministic game logic running on both the clients and the server.
 
+## External Dependencies {#external-dependencies}
+
+You can import external dependencies in your game logic, e.g. for physics or pathfinding. Many external libraries contain code that have unintended side effects and thus does not comply with constraints listed above. For that reason Rune has a [list of known supported libraries](https://github.com/rune/rune-multiplayer-web-games/blob/staging/packages/vite-plugin-rune/src/dependency-whitelist.ts).
+
+In case you use a library that's not on the supported libraries list, you'll receive a warning in CLI during development. If you build the game and successfully upload it to Rune, we would appreciate if you add the dependencies to the list linked above.
+
+
 ## Editor Integration {#editor-integration}
 
 Rune has created an eslint plugin to give warnings for potentially unsafe code directly in your editor! If you're using the Rune quickstart template created using `npx rune-games-cli@latest create`, then this eslint plugin is already set up for you. If not, then follow the steps below.

@@ -6,70 +6,98 @@ sidebar_position: 0
 
 Build a multiplayer game for the [Rune platform](https://www.rune.ai) and its millions of players. Rune handles netcode, servers, voice chat, matchmaking, spectating, and much more.
 
-## Install {#install}
-
-Create a new Rune game project by running: 
+To get started, you only need to run one command:
 
 ```sh
 npx rune-games-cli@latest create
 ```
+After this, you'll have a multiplayer Tic Tac Toe game running.
 
-or follow this [guide to port your existing game](./how-it-works/existing-game.md) to Rune!
+Alternatively, follow the [guide to port your existing game to Rune](./how-it-works/existing-game.md). 
+
+## Uploading & Playing In The App {#playing-the-game-in-app}
+
+Now that you have Tic Tac Toe running locally, it would be great to try playing it in the Rune app:
+
+```sh
+npm run upload
+```
+That's it. You'll now see your game inside Rune and can play it with your friends!
 
 ## Game Logic {#game-logic}
 
-Create a file named `logic.js` with a `setup` function that returns initial values for your `game` state that should be [synced across players](how-it-works/syncing-game-state.md). Add an action that modifies this `game` state and call `Rune.initLogic()` to initialize. For instance, to give all players a score and have an action that just increments the score:
+Rune games are split into two parts: logic & rendering. Let's look at the logic for the generated Tic Tac Toe game.
+
+You can find the logic code in the `logic.js` file. The `setup` function is responsible for creating an initial `game` state that's synced across players:
 
 ```js
-// logic.js
+function setup() {
+  const game = {
+    cells: new Array(9).fill(null), // 3x3 cell grid
+    lastMovePlayerId: null,
+    // ... rest of the game state
+  }
+  return game
+}
+```
 
+To modify the `game` state synced between players, we define actions that get called from the client code. Here's the action to mark a cell in Tic Tac Toe:
+
+```js
+function claimCell(cellIndex, { game, playerId }) {
+  // Do not allow to claim cell if it's already claimed or if it is not player's turn
+  if (game.cells[cellIndex] !== null || playerId === game.lastMovePlayerId) {
+    throw Rune.invalidAction()
+  }
+
+  game.cells[cellIndex] = playerId
+  game.lastMovePlayerId = playerId
+  
+  // ... rest of the logic, like checking for win condition
+}
+```
+
+Finally, we provide setup function, actions, and other game info to `Rune.initLogic()`:
+
+```js
 Rune.initLogic({
-  minPlayers: 1,
-  maxPlayers: 4,
-  setup: (allPlayerIds) => {
-    const game = { scores: {} }
-    for (let playerId of allPlayerIds) {
-      game.scores[playerId] = 0
-    }
-    return game
-  },
+  minPlayers: 2,
+  maxPlayers: 2,
+  setup,
   actions: {
-    incrementScore(playerWhoGotPoints, { game }) {
-      game.scores[playerWhoGotPoints]++
-    },
+    claimCell,
   },
 })
 ```
+Other `initLogic()` options are described in [API game logic reference](api-reference.md#game-logic). You can also read a more in-depth explanation of how the logic code works in [Syncing Game State](how-it-works/syncing-game-state.md).
 
-## Rendering {#rendering}
 
-Next, integrate your game UI to [react to game state changes](api-reference.md#runeinitclientoptions) and [send actions to the logic layer](api-reference.md#runeinitclientoptions). This code may live anywhere except in `logic.js`; the docs will refer to `client.js`:
+## Rendering & Inputs {#rendering}
+
+You can find your game rendering code in `client.js` file. The client code is responsible for reacting to `game` state changes and updating the rendering accordingly:
 
 ```js
-// client.js
+function onChange({ game, players, yourPlayerId, action }) {
+  const { cells, lastMovePlayerId } = game
 
-// Your game setup code...
-
-// Trigger an action based on user input
-button.onClick = () => {
-  Rune.actions.incrementScore({
-    playerWhoGotPoints: "player1",
-  })
+  // ... update your game visuals according to latest received game state. Also play sound effects, update styles, etc.
 }
 
-// Callback you define for when something changes (e.g. someone made an action)
-function onChange({ game, yourPlayerId, players, action, event }) {
-  // Your game visuals update code...
-}
-
-// Initialize the Rune SDK once your game is fully ready
 Rune.initClient({ onChange })
 ```
 
-## Next Steps {#next-steps}
+The client code also calls actions based on user input:
 
-- [View example games](examples.mdx)
-- [Read more about game state syncing](how-it-works/syncing-game-state.md)
-- [Publish your game](publishing/publishing-your-game.md)
-- [Explore the API reference](api-reference.md)
-- [Join the Rune Discord server](https://discord.gg/rune-devs)
+```js
+const button = // ... get the cell
+button.addEventListener("click", () => Rune.actions.claimCell(cellIndex))
+```
+
+You can find additional information about [rendering here](how-it-works/syncing-game-state.md#rendering).
+
+## What Next? {#next-steps}
+
+- If you want some inspiration for your next game, we really recommend [checking out the example games](examples.mdx)!
+- Building games is more fun when you're part of a community, join the [Rune Discord server](https://discord.gg/rune-devs).
+- If your game is ready to be published for all Rune users, check out [publishing your game](publishing/publishing-your-game.md).
+- Want to know everything that Rune supports? [Explore the API reference](api-reference.md).

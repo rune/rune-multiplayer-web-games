@@ -81,17 +81,17 @@ The `setup` function returns the initial values for the game state, which is the
 
 The `actions` option is an object with actions functions exposed to the UI integration layer, called with [`Rune.actions.myAction(payload)`](#runeactionspayload). The functions are responsible for [validating the action](#runeinvalidaction), mutating the `game` state and [end the game](#runegameover) when appropriate.
 
-#### `events: { playerJoined? | playerLeft?: (playerId: string, { game: any, allPlayerIds: string[] }) => void }` _optional_ {#events--playerjoined--playerleft-playerid-string--game-any-allplayerids-string---void--_optional_}
+#### `events: { playerJoined? | playerLeft?: (playerId: string, { game: any, allPlayerIds: string[] }) => void }` _optional_ {#events--playerjoined--playerleft-playerid-string--game-any-allplayerids-string---void}
 
 By default a game will end if a player leaves (see [Joining and Leaving](advanced/joining-leaving.md#minimum-and-maximum-players)), but by defining the `playerJoined`/`playerLeft` events you can [Support Players Joining Midgame](advanced/joining-leaving.md#supporting-players-joining-midgame).
 
-#### `update({game: object,  allPlayerIds: string[]}) => void` _optional_ {#updategame-object--allplayerids-string--void-_optional_}
+#### `update({game: object,  allPlayerIds: string[]}) => void` _optional_ {#updategame-object--allplayerids-string--void}
 
 Function that is executed every second. See [Using Time in your Game](advanced/real-time-games.md#update-function).
 
 #### `updatesPerSecond?: number` {#updatespersecond-number}
 
-How many times `update` function should be executed per second. Allowed values 1-30. Default 1. See  [Real time games](advanced/real-time-games.md).
+How many times `update` function should be executed per second. Allowed values 1-30. Default 1. See  [Real-Time Games](advanced/real-time-games.md).
 
 #### `inputDelay?: number` {#inputdelay-number}
 
@@ -191,7 +191,7 @@ This argument is the previous game state. Usually this can be ignored, but it's 
 
 ##### `futureGame?: object` {#futuregame-object}
 
-This argument is the predicted future game state. This value is only available if game uses `update` function. Used in cases game wants to do interpolations. See [Reducing stutter](advanced/reducing-stutter.md).
+This argument is the predicted future game state. This value is only available if game uses `update` function. Used only in cases, where the game wants to do interpolation. See [Reducing Stutter](advanced/reducing-stutter.md).
 
 ##### `yourPlayerId?: string` {#yourplayerid-string}
 
@@ -202,12 +202,6 @@ Your player id, if the current user is a spectator this argument is undefined.
 *Deprecated:* Use [allPlayerIds](#all-player-ids) and [Rune.getPlayerInfo](#rune-get-player-info)
 
 The `players` argument is an object of the current players, useful to display their names and avatars in the game.
-
-:::caution
-
-Do not rely on `players` argument for determining player order, instead use `setup` and `events.playerJoined/playerLeft` callbacks in `logic.js`.
-
-:::
 
 ##### `allPlayerIds?: string[]` {#all-player-ids}
 
@@ -246,9 +240,9 @@ Opens invite modal inside the Rune app. Useful if you want to incentivize player
 
 Returns the amount of milliseconds that have passed since the start of the game. See [Using Time in your Game](advanced/real-time-games.md#game-time).
 
-### `Rune.getPlayerInfo(id)` {#rune-get-player-info}
+### `Rune.getPlayerInfo(playerId)` {#rune-get-player-info}
 
-Returns information about the player with the ID specified. Note that you can pass the ID of a player that is no longer in game and get placeholder information.
+Returns name, avatar, etc. for the player. Note that you can pass the ID of a player that is no longer in game and get placeholder information.
 
 ### `Rune.timeSinceLastUpdate()` {#runetimesincelastupdate}
 
@@ -260,8 +254,8 @@ Number of milliseconds indicating how often `update` function is called. Only av
 
 ### `Rune.interpolator()` {#runeinterpolator}
 
-Returns an instance of interpolator. See [Reducing Stutter](advanced/reducing-stutter.md)
+Returns an instance of interpolator. See [Reducing Stutter](advanced/reducing-stutter.md).
 
 ### `Rune.interpolatorLatency()` {#runeinterpolatorlatency}
 
-Returns an instance of interpolator. See [Reducing stutter](advanced/reducing-stutter.md).
+Returns an instance of interpolator. See [Reducing Stutter](advanced/reducing-stutter.md).

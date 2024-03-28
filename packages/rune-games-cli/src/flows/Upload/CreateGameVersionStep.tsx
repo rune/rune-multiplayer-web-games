@@ -80,6 +80,8 @@ export function CreateGameVersionStep({
                 (only share this link with other devs who are helping playtest
                 your game)
               </Text>
+              <Newline />
+              You can also test your game in the Rune app.
               {shouldPostToDiscord && (
                 <>
                   <Newline />
